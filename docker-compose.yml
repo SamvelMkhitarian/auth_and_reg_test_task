@@ -1,0 +1,43 @@
+# Имя проекта: контейнеры testovoe_stack-* не пересекаются со старым testovoe-db-1 при сбое Snap Docker
+name: testovoe_stack
+
+services:
+  db:
+    image: postgres:16-alpine
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Порт 5432 на хост не пробрасываем (конфликт с локальным Postgres).
+    # Проброс 8000 здесь: app работает в network_mode: service:db (обход бага Snap Docker:
+    # между контейнерами на bridge TCP к db:5432 не доходит, localhost в том же NS — ок).
+    ports:
+      - "${APP_PORT:-8080}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    security_opt:
+      - apparmor:unconfined
+    network_mode: service:db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://app:app@127.0.0.1:5432/app?ssl=disable
+      SECRET_KEY: ${SECRET_KEY:-docker-dev-secret-change-me-32chars}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+      REFRESH_TOKEN_EXPIRE_DAYS: "7"
+      LOG_FORMAT: json
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
