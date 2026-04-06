@@ -5,7 +5,14 @@ from app.api.deps import SessionDep
 from app.rate_limit import limiter
 from app.schemas.auth import LoginIn, RefreshIn, TokenPairOut
 from app.schemas.user import UserProfileOut, UserRegisterIn
-from app.use_cases import auth
+from app.use_cases.auth import (
+    EmailAlreadyRegisteredError,
+    InvalidCredentialsError,
+    InvalidRefreshTokenError,
+    login_user,
+    refresh_access_token,
+    register_user,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -23,8 +30,8 @@ async def register(
 ) -> UserProfileOut:
     """Регистрация по email и паролю."""
     try:
-        user = await auth.register_user(session, body)
-    except auth.EmailAlreadyRegisteredError:
+        user = await register_user(session, body)
+    except EmailAlreadyRegisteredError:
         logger.info("register_conflict", email=body.email)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -43,8 +50,8 @@ async def login(
 ) -> TokenPairOut:
     """Логин: access + refresh JWT. Не более 5 попыток в минуту с одного IP."""
     try:
-        tokens = await auth.login_user(session, body.email, body.password)
-    except auth.InvalidCredentialsError:
+        tokens = await login_user(session, body.email, body.password)
+    except InvalidCredentialsError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -60,8 +67,8 @@ async def refresh_tokens(
 ) -> TokenPairOut:
     """Новая пара токенов по refresh."""
     try:
-        tokens = await auth.refresh_access_token(session, body.refresh_token)
-    except auth.InvalidRefreshTokenError:
+        tokens = await refresh_access_token(session, body.refresh_token)
+    except InvalidRefreshTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",

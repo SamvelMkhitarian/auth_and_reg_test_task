@@ -2,17 +2,12 @@ import jwt
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import (
-    create_access_token,
-    create_refresh_token,
-    decode_token,
-    hash_password,
-    verify_password,
-)
+from app.core.security import create_access_token, create_refresh_token, decode_token, hash_password, verify_password
 from app.models.user import User, UserRole
 from app.schemas.auth import TokenPairOut
 from app.schemas.user import UserRegisterIn
-from app.use_cases import audit, user as user_service
+from app.use_cases.audit import log_action
+from app.use_cases import user as user_service
 
 
 class EmailAlreadyRegisteredError(Exception):
@@ -43,7 +38,7 @@ async def register_user(session: AsyncSession, payload: UserRegisterIn) -> User:
         await session.rollback()
         raise EmailAlreadyRegisteredError from None
     await session.refresh(user)
-    await audit.log_action(
+    await log_action(
         session,
         action="register",
         user_id=user.id,
@@ -61,7 +56,7 @@ async def login_user(session: AsyncSession, email: str, password: str) -> TokenP
         raise InvalidCredentialsError
     access = create_access_token(user.id)
     refresh = create_refresh_token(user.id)
-    await audit.log_action(
+    await log_action(
         session,
         action="login",
         user_id=user.id,
