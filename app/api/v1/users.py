@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import CurrentUserDep, SessionDep
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.user import UserProfileOut, UserUpdateIn
 from app.use_cases import user
 
@@ -26,3 +26,17 @@ async def update_me(
     updated = await user.update_user_profile(session, current_user, body)
     await session.commit()
     return updated
+
+
+@router.get("/", response_model=list[UserProfileOut])
+async def read_all_users(
+    session: SessionDep,
+    current_user: CurrentUserDep,
+) -> list[User]:
+    """Список всех пользователей (только для админа)."""
+    if current_user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
+    return await user.get_all_users(session)

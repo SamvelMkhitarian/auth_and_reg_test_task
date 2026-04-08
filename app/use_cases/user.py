@@ -31,3 +31,8 @@ async def update_user_profile(
     await session.flush()
     await session.refresh(user)
     return user
+
+
+async def get_all_users(session: AsyncSession) -> list[User]:
+    res = await session.execute(select(User).order_by(User.id))
+    return list(res.scalars().all())
