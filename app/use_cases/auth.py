@@ -2,12 +2,18 @@ import jwt
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import create_access_token, create_refresh_token, decode_token, hash_password, verify_password
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_password,
+    verify_password,
+)
 from app.models.user import User, UserRole
 from app.schemas.auth import TokenPairOut
 from app.schemas.user import UserRegisterIn
-from app.use_cases.audit import log_action
 from app.use_cases import user as user_service
+from app.use_cases.audit import log_action
 
 
 class EmailAlreadyRegisteredError(Exception):
