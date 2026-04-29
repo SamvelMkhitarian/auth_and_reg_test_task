@@ -44,7 +44,7 @@ async def register(
 @router.post("/login", response_model=TokenPairOut)
 @limiter.limit("5/minute")
 async def login(
-    request: Request,
+    request: Request,  # noqa: F841
     body: LoginIn,
     session: SessionDep,
 ) -> TokenPairOut:
