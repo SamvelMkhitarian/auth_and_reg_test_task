@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import sys
 from collections.abc import AsyncGenerator
 from typing import Any
 
@@ -11,17 +10,16 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.db import session as session_module
-from app.db.base import Base
+from app.infrastructure.config.settings import get_settings
+from app.infrastructure.persistence.database import session as session_module
+from app.infrastructure.persistence.database.base import Base
 from app.main import app
 
-# До импорта приложения задаём окружение
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
 os.environ["SECRET_KEY"] = "pytest-secret-key-exactly-32bytes!!"
 os.environ["LOG_FORMAT"] = "console"
 
-if "app.core.config" in sys.modules:
-    sys.modules["app.core.config"].get_settings.cache_clear()
+get_settings.cache_clear()
 
 
 @pytest.fixture(autouse=True)

@@ -8,9 +8,10 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-from app.core.config import get_settings
-from app.db.asyncpg_connect import connect_args_for_database_url
-from app.db.base import Base
+from app.infrastructure.config.settings import get_settings
+from app.infrastructure.persistence.database.asyncpg_connect import connect_args_for_database_url
+from app.infrastructure.persistence.database.base import Base
+from app.infrastructure.persistence.models import AuditLogModel, UserModel  # noqa: F401
 
 config = context.config
 

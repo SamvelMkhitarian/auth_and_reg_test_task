@@ -3,8 +3,8 @@
 from httpx import AsyncClient
 from sqlalchemy import select
 
-from app.db.session import _ensure_engine
-from app.models.user import User
+from app.infrastructure.persistence.database.session import _ensure_engine
+from app.infrastructure.persistence.models.user import UserModel
 
 
 async def test_register_returns_profile_without_password(client: AsyncClient) -> None:
@@ -105,7 +105,7 @@ async def test_password_stored_hashed_not_plaintext(client: AsyncClient) -> None
 
     factory = _ensure_engine()
     async with factory() as session:
-        result = await session.execute(select(User).where(User.email == "hash@example.com"))
+        result = await session.execute(select(UserModel).where(UserModel.email == "hash@example.com"))
         user = result.scalar_one()
         assert user.password_hash != plain
         assert user.password_hash.startswith("$2")

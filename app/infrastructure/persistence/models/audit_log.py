@@ -3,11 +3,11 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import Base
+from app.infrastructure.persistence.database.base import Base
 
 
-class AuditLog(Base):
-    """Запись аудита."""
+class AuditLogModel(Base):
+    """ORM-модель аудита."""
 
     __tablename__ = "audit_logs"
 

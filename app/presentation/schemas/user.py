@@ -1,8 +1,16 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.models.user import UserRole
+
+class UserRoleSchema(str, Enum):
+    """Роль в HTTP-контракте (независима от ORM)."""
+
+    free_user = "free_user"
+    paid_user = "paid_user"
+    specialist = "specialist"
+    admin = "admin"
 
 
 class UserRegisterIn(BaseModel):
@@ -23,7 +31,7 @@ class UserProfileOut(BaseModel):
     email: str
     full_name: str | None
     phone: str | None
-    role: UserRole
+    role: UserRoleSchema
     is_active: bool
     created_at: datetime
 

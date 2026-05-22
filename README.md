@@ -1,36 +1,37 @@
 # Мини-API: регистрация и авторизация
 
-FastAPI, async SQLAlchemy 2.0, PostgreSQL, JWT (access + refresh), bcrypt, Alembic, Docker Compose.
+FastAPI, слоистая архитектура (Domain → Application → Infrastructure → Presentation), async SQLAlchemy 2.0, PostgreSQL, JWT, bcrypt, Alembic, Docker Compose.
+
+## Архитектура
+
+```
+app/
+├── domain/              # Сущности и enum без внешних зависимостей
+├── application/       # Сервисы, DTO, порты (Protocol), исключения
+├── infrastructure/    # ORM, репозитории, JWT, bcrypt, конфиг, БД
+├── presentation/      # FastAPI роутеры, HTTP-схемы, маппинг в ответы
+├── composition/       # Composition root: сборка зависимостей
+└── main.py
+```
+
+Зависимости направлены внутрь: Presentation → Application → Domain; Infrastructure реализует порты Application.
 
 ## Запуск через Docker (рекомендуется)
-
-На машине нужны только Docker и Docker Compose.
 
 ```bash
 docker compose up --build
 ```
 
-После старта приложение доступно на **8080** на вашем компьютере (внутри контейнера по-прежнему порт 8000):
-
 - API: http://127.0.0.1:8080
 - Swagger: http://127.0.0.1:8080/docs
 
-Нужен именно порт 8000 на хосте: `APP_PORT=8000 docker compose up --build`. Любой другой свободный порт: `APP_PORT=3000 docker compose up --build`.
-
-Контейнер `app` ждёт PostgreSQL, применяет `alembic upgrade head` и запускает Uvicorn.
-
-Переменные окружения можно переопределить через файл `.env` (см. `.env.example`) или секцию `environment` в `docker-compose.yml`. Для продакшена обязательно задайте свой `SECRET_KEY` (не короче 16 символов, для HS256 лучше ≥ 32 байта).
-
-## Локальный запуск (без Docker)
-
-Нужны Python 3.11+, PostgreSQL с созданной БД.
+## Локальный запуск
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 uv sync --dev
 cp .env.example .env
-# Отредактируйте .env: DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/dbname
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
@@ -44,8 +45,9 @@ uvicorn app.main:app --reload
 | POST | `/api/v1/auth/refresh` | Новая пара токенов по refresh |
 | GET | `/api/v1/users/me` | Профиль (Bearer access token) |
 | PUT | `/api/v1/users/me` | Обновление `full_name`, `phone` |
+| GET | `/api/v1/users/` | Список пользователей (только admin) |
 
-На `/api/v1/auth/login` действует ограничение: не более 5 запросов в минуту с одного IP.
+На `/api/v1/auth/login` — не более 5 запросов в минуту с одного IP.
 
 ## Тесты
 
@@ -54,14 +56,16 @@ uv sync --dev
 pytest tests/ -v
 ```
 
-Тесты используют SQLite в памяти и не требуют запущенного PostgreSQL.
+Тесты используют SQLite в памяти.
 
-## Структура
+## Слои в деталях
 
-- `app/api/v1/` — роутеры
-- `app/services/` — бизнес-логика
-- `app/models/` — ORM-модели
-- `app/schemas/` — Pydantic v2 (входы/выходы)
-- `alembic/versions/` — миграции (создание таблиц без `create_all()` в проде)
+| Слой | Ответственность |
+|------|-----------------|
+| **Domain** | `User`, `UserRole` — чистая модель |
+| **Application** | `AuthService`, `UserService`; порты `IUserRepository`, `ITokenService`, `IUnitOfWork` |
+| **Infrastructure** | SQLAlchemy-репозитории, `JwtTokenService`, `BcryptPasswordHasher` |
+| **Presentation** | Роутеры, Pydantic-схемы, маппинг domain → HTTP |
+| **Composition** | `build_auth_service`, `build_unit_of_work` |
 
-Дополнительно: таблица `audit_logs` с записями при успешной регистрации и входе.
+Таблица `audit_logs` заполняется при регистрации и входе.

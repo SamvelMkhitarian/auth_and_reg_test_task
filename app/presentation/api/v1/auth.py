@@ -1,18 +1,17 @@
 import structlog
 from fastapi import APIRouter, HTTPException, Request, status
 
-from app.api.deps import SessionDep
-from app.rate_limit import limiter
-from app.schemas.auth import LoginIn, RefreshIn, TokenPairOut
-from app.schemas.user import UserProfileOut, UserRegisterIn
-from app.use_cases.auth import (
+from app.application.dto.auth import LoginCommand, RefreshTokenCommand, RegisterUserCommand
+from app.application.exceptions import (
     EmailAlreadyRegisteredError,
     InvalidCredentialsError,
     InvalidRefreshTokenError,
-    login_user,
-    refresh_access_token,
-    register_user,
 )
+from app.presentation.api.deps import AuthServiceDep, UnitOfWorkDep
+from app.presentation.mappers import user_mapper
+from app.presentation.schemas.auth import LoginIn, RefreshIn, TokenPairOut
+from app.presentation.schemas.user import UserProfileOut, UserRegisterIn
+from app.rate_limit import limiter
 
 logger = structlog.get_logger(__name__)
 
@@ -26,19 +25,22 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def register(
     body: UserRegisterIn,
-    session: SessionDep,
+    auth_service: AuthServiceDep,
+    uow: UnitOfWorkDep,
 ) -> UserProfileOut:
     """Регистрация по email и паролю."""
     try:
-        user = await register_user(session, body)
+        user = await auth_service.register(
+            RegisterUserCommand(email=str(body.email), password=body.password)
+        )
     except EmailAlreadyRegisteredError:
         logger.info("register_conflict", email=body.email)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered",
         ) from None
-    await session.commit()
-    return UserProfileOut.model_validate(user)
+    await uow.commit()
+    return user_mapper.to_profile_out(user)
 
 
 @router.post("/login", response_model=TokenPairOut)
@@ -46,32 +48,36 @@ async def register(
 async def login(
     request: Request,  # noqa: F841
     body: LoginIn,
-    session: SessionDep,
+    auth_service: AuthServiceDep,
+    uow: UnitOfWorkDep,
 ) -> TokenPairOut:
     """Логин: access + refresh JWT. Не более 5 попыток в минуту с одного IP."""
     try:
-        tokens = await login_user(session, body.email, body.password)
+        tokens = await auth_service.login(
+            LoginCommand(email=str(body.email), password=body.password)
+        )
     except InvalidCredentialsError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         ) from None
-    await session.commit()
-    return tokens
+    await uow.commit()
+    return user_mapper.to_token_pair_out(tokens)
 
 
 @router.post("/refresh", response_model=TokenPairOut)
 async def refresh_tokens(
     body: RefreshIn,
-    session: SessionDep,
+    auth_service: AuthServiceDep,
+    uow: UnitOfWorkDep,
 ) -> TokenPairOut:
     """Новая пара токенов по refresh."""
     try:
-        tokens = await refresh_access_token(session, body.refresh_token)
+        tokens = await auth_service.refresh(RefreshTokenCommand(refresh_token=body.refresh_token))
     except InvalidRefreshTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",
         ) from None
-    await session.commit()
-    return tokens
+    await uow.commit()
+    return user_mapper.to_token_pair_out(tokens)

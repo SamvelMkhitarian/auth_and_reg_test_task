@@ -7,9 +7,9 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.api.v1.router import api_router
-from app.core.config import get_settings
-from app.core.logging import configure_logging
+from app.infrastructure.config.settings import get_settings
+from app.infrastructure.logging.logging import configure_logging
+from app.presentation.api.v1.router import api_router
 from app.rate_limit import limiter
 
 logger = structlog.get_logger(__name__)

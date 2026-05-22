@@ -4,11 +4,11 @@ from datetime import datetime
 from sqlalchemy import Boolean, DateTime, Enum, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import Base
+from app.infrastructure.persistence.database.base import Base
 
 
-class UserRole(str, enum.Enum):
-    """Роли пользователя."""
+class UserRoleORM(str, enum.Enum):
+    """Роль пользователя в ORM (значения совпадают с доменом)."""
 
     free_user = "free_user"
     paid_user = "paid_user"
@@ -16,8 +16,8 @@ class UserRole(str, enum.Enum):
     admin = "admin"
 
 
-class User(Base):
-    """Пользователь системы."""
+class UserModel(Base):
+    """ORM-модель пользователя."""
 
     __tablename__ = "users"
 
@@ -26,16 +26,16 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(128), nullable=False)
     full_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    role: Mapped[UserRole] = mapped_column(
+    role: Mapped[UserRoleORM] = mapped_column(
         Enum(
-            UserRole,
+            UserRoleORM,
             values_callable=lambda x: [e.value for e in x],
             native_enum=False,
             length=32,
         ),
         nullable=False,
-        default=UserRole.free_user,
-        server_default=UserRole.free_user.value,
+        default=UserRoleORM.free_user,
+        server_default=UserRoleORM.free_user.value,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default="true"
