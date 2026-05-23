@@ -62,7 +62,7 @@ pytest tests/ -v
 
 Workflow `.github/workflows/ci.yml` на каждый push и pull request:
 
-1. **Lint** — Ruff, Flake8, Mypy, Vulture (кэш зависимостей через `setup-uv`).
+1. **Lint** — Ruff, Flake8, Mypy, Vulture (кэш зависимостей через `setup-uv@v8`).
 2. **Tests** — запускается только если lint прошёл; `pytest` с SQLite in-memory.
 
 ## Слои в деталях
