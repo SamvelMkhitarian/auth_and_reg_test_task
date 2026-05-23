@@ -45,9 +45,9 @@ jobs:
     needs: lint
 
     env:
-      DATABASE_URL: sqlite+aiosqlite:///:memory:
-      SECRET_KEY: ci-secret-key-exactly-32bytes!!
-      LOG_FORMAT: console
+      DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+      SECRET_KEY: "ci-secret-key-exactly-32bytes!!"
+      LOG_FORMAT: "console"
 
     steps:
       - name: Checkout repository
