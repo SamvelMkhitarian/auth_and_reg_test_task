@@ -27,17 +27,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev --frozen
 
-      - name: Run Ruff
-        run: uv run ruff check .
-
-      - name: Run Flake8
-        run: uv run flake8 .
-
-      - name: Run Mypy
-        run: uv run mypy .
-
-      - name: Run Vulture
-        run: uv run vulture
+      - name: Run linters and type checkers
+        run: uv run poe lint
 
   test:
     name: Tests
@@ -47,7 +38,6 @@ jobs:
     env:
       DATABASE_URL: "sqlite+aiosqlite:///:memory:"
       SECRET_KEY: "ci-secret-key-exactly-32bytes!!"
-      LOG_FORMAT: "console"
 
     steps:
       - name: Checkout repository
@@ -68,4 +58,4 @@ jobs:
         run: uv sync --dev --frozen
 
       - name: Run pytest
-        run: uv run pytest tests/ -v
+        run: uv run poe test

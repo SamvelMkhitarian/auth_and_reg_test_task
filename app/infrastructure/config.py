@@ -5,19 +5,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Конфигурация сервиса."""
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
-    database_url: str = Field(
-        ...,
-        alias="DATABASE_URL",
-        description="Async SQLAlchemy URL (postgresql+asyncpg://...)",
-    )
+    app_name: str = "Auth API"
+    api_prefix: str = "/api/v1"
+    database_url: str = Field(..., alias="DATABASE_URL")
     secret_key: str = Field(..., alias="SECRET_KEY", min_length=16)
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(
@@ -30,10 +26,11 @@ class Settings(BaseSettings):
         alias="REFRESH_TOKEN_EXPIRE_DAYS",
         ge=1,
     )
-    log_format: str = Field(default="json", alias="LOG_FORMAT")
+
+
+app_settings = Settings()
 
 
 @lru_cache
 def get_settings() -> Settings:
-    """Возвращает закэшированный экземпляр настроек."""
-    return Settings()
+    return app_settings

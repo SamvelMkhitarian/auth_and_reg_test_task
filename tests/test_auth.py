@@ -2,9 +2,9 @@
 
 from httpx import AsyncClient
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.infrastructure.persistence.database.session import _ensure_engine
-from app.infrastructure.persistence.models.user import UserModel
+from app.infrastructure.persistence.models import UserModel
 
 
 async def test_register_returns_profile_without_password(client: AsyncClient) -> None:
@@ -96,16 +96,19 @@ async def test_refresh_returns_new_access(client: AsyncClient) -> None:
     assert new_access != login.json()["access_token"]
 
 
-async def test_password_stored_hashed_not_plaintext(client: AsyncClient) -> None:
+async def test_password_stored_hashed_not_plaintext(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
     plain = "mysecurepass1"
     await client.post(
         "/api/v1/auth/register",
         json={"email": "hash@example.com", "password": plain},
     )
 
-    factory = _ensure_engine()
-    async with factory() as session:
-        result = await session.execute(select(UserModel).where(UserModel.email == "hash@example.com"))
-        user = result.scalar_one()
-        assert user.password_hash != plain
-        assert user.password_hash.startswith("$2")
+    result = await db_session.execute(
+        select(UserModel).where(UserModel.email == "hash@example.com")
+    )
+    user = result.scalar_one()
+    assert user.password_hash != plain
+    assert user.password_hash.startswith("$2")

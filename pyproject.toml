@@ -13,11 +13,7 @@ dependencies = [
     "pydantic-settings>=2.2.0",
     "bcrypt>=4.1.0",
     "PyJWT>=2.8.0",
-    "structlog>=24.1.0",
     "slowapi>=0.1.9",
-    "python-multipart>=0.0.9",
-    "isort>=8.0.1",
-    "vulture>=2.16",
 ]
 
 [dependency-groups]
@@ -32,6 +28,7 @@ dev = [
     "flake8>=7.3.0",
     "vulture>=2.16",
     "pytest-cov>=7.1.0",
+    "poethepoet>=0.32.0",
 ]
 
 [tool.uv]
@@ -65,3 +62,17 @@ exclude = ["^venv/", "^\\.venv/"]
 paths = ["app", "tests"]
 exclude = [".venv", "venv", "alembic"]
 min_confidence = 80
+
+[tool.poe.tasks.lint]
+sequence = [
+    { cmd = "ruff check ." },
+    { cmd = "flake8 ." },
+    { cmd = "mypy ." },
+    { cmd = "vulture" },
+]
+
+[tool.poe.tasks.test]
+cmd = "pytest tests/ -v"
+
+[tool.poe.tasks.check]
+sequence = ["lint", "test"]

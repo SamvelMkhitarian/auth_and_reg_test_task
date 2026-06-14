@@ -8,10 +8,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-from app.infrastructure.config.settings import get_settings
-from app.infrastructure.persistence.database.asyncpg_connect import connect_args_for_database_url
-from app.infrastructure.persistence.database.base import Base
-from app.infrastructure.persistence.models import AuditLogModel, UserModel  # noqa: F401
+from app.infrastructure.config import get_settings
+from app.infrastructure.persistence.database import connect_args_for_database_url
+from app.infrastructure.persistence.models import AuditLogModel, Base, UserModel  # noqa: F401
 
 config = context.config
 
@@ -22,7 +21,6 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Режим offline: URL без async-драйвера."""
     url = str(get_settings().database_url).replace("postgresql+asyncpg", "postgresql")
     context.configure(
         url=url,

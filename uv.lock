@@ -516,15 +516,6 @@ wheels = [
 ]
 
 [[package]]
-name = "isort"
-version = "8.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ef/7c/ec4ab396d31b3b395e2e999c8f46dec78c5e29209fac49d1f4dace04041d/isort-8.0.1.tar.gz", hash = "sha256:171ac4ff559cdc060bcfff550bc8404a486fee0caab245679c2abe7cb253c78d", size = 769592, upload-time = "2026-02-28T10:08:20.685Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3e/95/c7c34aa53c16353c56d0b802fba48d5f5caa2cdee7958acbcb795c830416/isort-8.0.1-py3-none-any.whl", hash = "sha256:28b89bc70f751b559aeca209e6120393d43fbe2490de0559662be7a9787e3d75", size = 89733, upload-time = "2026-02-28T10:08:19.466Z" },
-]
-
-[[package]]
 name = "librt"
 version = "0.8.1"
 source = { registry = "https://pypi.org/simple" }
@@ -775,6 +766,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pastel"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/f1/4594f5e0fcddb6953e5b8fe00da8c317b8b41b547e2b3ae2da7512943c62/pastel-0.2.1.tar.gz", hash = "sha256:e6581ac04e973cac858828c6202c1e1e81fee1dc7de7683f3e1ffe0bfd8a573d", size = 7555, upload-time = "2020-09-16T19:21:12.43Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/18/a8444036c6dd65ba3624c63b734d3ba95ba63ace513078e1580590075d21/pastel-0.2.1-py2.py3-none-any.whl", hash = "sha256:4349225fcdf6c2bb34d483e523475de5bb04a5c10ef711263452cb37d7dd4364", size = 5955, upload-time = "2020-09-16T19:21:11.409Z" },
+]
+
+[[package]]
 name = "pathspec"
 version = "1.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -790,6 +790,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "poethepoet"
+version = "0.46.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pastel" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3b/f5/d501fcb67e450fd3fae9db06050420c0c6043758cfa8c30ba40278211265/poethepoet-0.46.0.tar.gz", hash = "sha256:daf8469031879ef59ef0b34fdba83574d65e41eb9186e20cd0f7c89ce479b030", size = 117276, upload-time = "2026-05-15T15:52:02.548Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/af/01/a9d6ea30351919298d3dc237172ae6a60ce0224ecaaee289b671ab979c13/poethepoet-0.46.0-py3-none-any.whl", hash = "sha256:dc6d770a14792d124abac9066c5a707876027d1878ac9ca26cf57e9b2a96dc89", size = 150581, upload-time = "2026-05-15T15:52:01.118Z" },
 ]
 
 [[package]]
@@ -1012,15 +1025,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-multipart"
-version = "0.0.24"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/8a/45/e23b5dc14ddb9918ae4a625379506b17b6f8fc56ca1d82db62462f59aea6/python_multipart-0.0.24.tar.gz", hash = "sha256:9574c97e1c026e00bc30340ef7c7d76739512ab4dfd428fec8c330fa6a5cc3c8", size = 37695, upload-time = "2026-04-05T20:49:13.829Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/73/89930efabd4da63cea44a3f438aeb753d600123570e6d6264e763617a9ce/python_multipart-0.0.24-py3-none-any.whl", hash = "sha256:9b110a98db707df01a53c194f0af075e736a770dc5058089650d70b4a182f950", size = 24420, upload-time = "2026-04-05T20:49:12.555Z" },
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1184,15 +1188,6 @@ wheels = [
 ]
 
 [[package]]
-name = "structlog"
-version = "25.5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ef/52/9ba0f43b686e7f3ddfeaa78ac3af750292662284b3661e91ad5494f21dbc/structlog-25.5.0.tar.gz", hash = "sha256:098522a3bebed9153d4570c6d0288abf80a031dfdb2048d59a49e9dc2190fc98", size = 1460830, upload-time = "2025-10-27T08:28:23.028Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/45/a132b9074aa18e799b891b91ad72133c98d8042c70f6240e4c5f9dabee2f/structlog-25.5.0-py3-none-any.whl", hash = "sha256:a8453e9b9e636ec59bd9e79bbd4a72f025981b3ba0f5837aebf48f02f37a7f9f", size = 72510, upload-time = "2025-10-27T08:28:21.535Z" },
-]
-
-[[package]]
 name = "testovoe"
 version = "0.1.0"
 source = { virtual = "." }
@@ -1201,16 +1196,12 @@ dependencies = [
     { name = "asyncpg" },
     { name = "bcrypt" },
     { name = "fastapi" },
-    { name = "isort" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
     { name = "pyjwt" },
-    { name = "python-multipart" },
     { name = "slowapi" },
     { name = "sqlalchemy", extra = ["asyncio"] },
-    { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
-    { name = "vulture" },
 ]
 
 [package.dev-dependencies]
@@ -1219,6 +1210,7 @@ dev = [
     { name = "flake8" },
     { name = "httpx" },
     { name = "mypy" },
+    { name = "poethepoet" },
     { name = "pydantic" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -1233,16 +1225,12 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.29.0" },
     { name = "bcrypt", specifier = ">=4.1.0" },
     { name = "fastapi", specifier = ">=0.110.0" },
-    { name = "isort", specifier = ">=8.0.1" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.6.0" },
     { name = "pydantic-settings", specifier = ">=2.2.0" },
     { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "python-multipart", specifier = ">=0.0.9" },
     { name = "slowapi", specifier = ">=0.1.9" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.25" },
-    { name = "structlog", specifier = ">=24.1.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
-    { name = "vulture", specifier = ">=2.16" },
 ]
 
 [package.metadata.requires-dev]
@@ -1251,6 +1239,7 @@ dev = [
     { name = "flake8", specifier = ">=7.3.0" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "mypy", specifier = ">=1.13.0" },
+    { name = "poethepoet", specifier = ">=0.32.0" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.23.0" },

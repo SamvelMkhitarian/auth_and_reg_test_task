@@ -1,9 +1,7 @@
-import enum
+from enum import StrEnum
 
 
-class UserRole(str, enum.Enum):
-    """Роль пользователя."""
-
+class UserRole(StrEnum):
     free_user = "free_user"
     paid_user = "paid_user"
     specialist = "specialist"

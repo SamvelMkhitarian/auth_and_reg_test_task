@@ -6,15 +6,14 @@ FastAPI, слоистая архитектура (Domain → Application → Inf
 
 ```
 app/
-├── domain/              # Сущности и enum без внешних зависимостей
-├── application/       # Сервисы, DTO, порты (Protocol), исключения
-├── infrastructure/    # ORM, репозитории, JWT, bcrypt, конфиг, БД
-├── presentation/      # FastAPI роутеры, HTTP-схемы, маппинг в ответы
-├── composition/       # Composition root: сборка зависимостей
+├── domain/              # entities, enums, exceptions
+├── application/         # services, ports (Protocol)
+├── infrastructure/      # config, ORM, repository, JWT, bcrypt
+├── presentation/api/    # routers, schemas, dependencies
 └── main.py
 ```
 
-Зависимости направлены внутрь: Presentation → Application → Domain; Infrastructure реализует порты Application.
+Зависимости направлены внутрь: Presentation → Application → Domain. Infrastructure реализует порты Application.
 
 ## Запуск через Docker (рекомендуется)
 
@@ -49,30 +48,37 @@ uvicorn app.main:app --reload
 
 На `/api/v1/auth/login` — не более 5 запросов в минуту с одного IP.
 
-## Тесты
+## Качество кода
 
 ```bash
 uv sync --dev
-pytest tests/ -v
+
+# Все линтеры и тайпчекеры одной командой
+uv run poe lint
+
+# Тесты
+uv run poe test
+
+# Lint + тесты (перед push)
+uv run poe check
 ```
 
-Тесты используют SQLite в памяти.
+Инструменты: Ruff, Flake8, Mypy, Vulture.
 
 ## CI (GitHub Actions)
 
 Workflow `.github/workflows/ci.yml` на каждый push и pull request:
 
-1. **Lint** — Ruff, Flake8, Mypy, Vulture (кэш зависимостей через `setup-uv@v8.1.0`).
-2. **Tests** — запускается только если lint прошёл; `pytest` с SQLite in-memory.
+1. **Lint** — `uv run poe lint` (Ruff, Flake8, Mypy, Vulture).
+2. **Tests** — `uv run poe test` с SQLite in-memory.
 
-## Слои в деталях
+## Слои
 
 | Слой | Ответственность |
 |------|-----------------|
-| **Domain** | `User`, `UserRole` — чистая модель |
-| **Application** | `AuthService`, `UserService`; порты `IUserRepository`, `ITokenService`, `IUnitOfWork` |
-| **Infrastructure** | SQLAlchemy-репозитории, `JwtTokenService`, `BcryptPasswordHasher` |
-| **Presentation** | Роутеры, Pydantic-схемы, маппинг domain → HTTP |
-| **Composition** | `build_auth_service`, `build_unit_of_work` |
+| **Domain** | `User`, `UserRole`, доменные исключения |
+| **Application** | `AuthService`, порты `UserRepositoryPort`, `TokenServicePort` |
+| **Infrastructure** | `SqlAlchemyUserRepository`, JWT, bcrypt, конфиг |
+| **Presentation** | FastAPI-роутеры, Pydantic-схемы, DI |
 
 Таблица `audit_logs` заполняется при регистрации и входе.
